@@ -6,7 +6,9 @@ import uuid
 
 
 class WebhookRequest(BaseModel):
-    transaction_id: str = Field(..., description="Unique transaction ID from external system")
+    transaction_id: str = Field(
+        ..., description="Unique transaction ID from external system"
+    )
     account_id: int = Field(..., description="User's account ID")
     user_id: int = Field(..., description="User ID")
     amount: Decimal = Field(..., gt=0, description="Amount to credit")

@@ -5,7 +5,9 @@ from tests.conftest import get_user_token
 @pytest.mark.asyncio
 async def test_get_me_success(client):
     token = await get_user_token(client)
-    _, resp = await client.get("/api/user/me", headers={"Authorization": f"Bearer {token}"})
+    _, resp = await client.get(
+        "/api/user/me", headers={"Authorization": f"Bearer {token}"}
+    )
     assert resp.status == 200
     data = resp.json
     assert data["email"] == "user@example.com"
@@ -21,14 +23,18 @@ async def test_get_me_unauthorized(client):
 
 @pytest.mark.asyncio
 async def test_get_me_invalid_token(client):
-    _, resp = await client.get("/api/user/me", headers={"Authorization": "Bearer invalidtoken"})
+    _, resp = await client.get(
+        "/api/user/me", headers={"Authorization": "Bearer invalidtoken"}
+    )
     assert resp.status == 401
 
 
 @pytest.mark.asyncio
 async def test_get_accounts_success(client):
     token = await get_user_token(client)
-    _, resp = await client.get("/api/user/accounts", headers={"Authorization": f"Bearer {token}"})
+    _, resp = await client.get(
+        "/api/user/accounts", headers={"Authorization": f"Bearer {token}"}
+    )
     assert resp.status == 200
     data = resp.json
     assert isinstance(data, list)
@@ -47,7 +53,9 @@ async def test_get_accounts_unauthorized(client):
 @pytest.mark.asyncio
 async def test_get_payments_success(client):
     token = await get_user_token(client)
-    _, resp = await client.get("/api/user/payments", headers={"Authorization": f"Bearer {token}"})
+    _, resp = await client.get(
+        "/api/user/payments", headers={"Authorization": f"Bearer {token}"}
+    )
     assert resp.status == 200
     data = resp.json
     assert isinstance(data, list)

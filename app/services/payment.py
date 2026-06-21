@@ -15,7 +15,10 @@ class PaymentService:
 
     def verify_signature(self, data: WebhookRequest) -> bool:
         sorted_keys = sorted(["account_id", "amount", "transaction_id", "user_id"])
-        concat_str = "".join(str(getattr(data, key)) for key in sorted_keys) + settings.SECRET_KEY
+        concat_str = (
+            "".join(str(getattr(data, key)) for key in sorted_keys)
+            + settings.SECRET_KEY
+        )
         expected_signature = hashlib.sha256(concat_str.encode()).hexdigest()
         return expected_signature == data.signature
 
@@ -30,16 +33,20 @@ class PaymentService:
             return None
 
         account = await self.session.execute(
-            select(Account).where(Account.id == data.account_id, Account.user_id == data.user_id)
+            select(Account).where(
+                Account.id == data.account_id, Account.user_id == data.user_id
+            )
         )
         account = account.scalar_one_or_none()
 
         if not account:
-            user = await self.session.execute(select(User).where(User.id == data.user_id))
+            user = await self.session.execute(
+                select(User).where(User.id == data.user_id)
+            )
             user = user.scalar_one_or_none()
             if not user:
                 return None
-            
+
             account = Account(user_id=data.user_id, balance=Decimal("0.00"))
             self.session.add(account)
             await self.session.flush()
@@ -60,6 +67,8 @@ class PaymentService:
 
     async def get_user_payments(self, user_id: int) -> list[Payment]:
         result = await self.session.execute(
-            select(Payment).where(Payment.user_id == user_id).order_by(Payment.created_at.desc())
+            select(Payment)
+            .where(Payment.user_id == user_id)
+            .order_by(Payment.created_at.desc())
         )
         return list(result.scalars().all())

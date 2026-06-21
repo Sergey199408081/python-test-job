@@ -29,5 +29,8 @@ sanic-testing = "24.6.0"
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.ruff.format]
+quote-style = "double"
+
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

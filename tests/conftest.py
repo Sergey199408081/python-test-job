@@ -51,14 +51,18 @@ async def engine():
 
 @pytest_asyncio.fixture
 async def session(engine):
-    session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    session_maker = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
     async with session_maker() as s:
         yield s
 
 
 @pytest_asyncio.fixture
 async def app(engine):
-    session_maker = async_sessionmaker(engine, class_=AsyncSession, expire_on_commit=False)
+    session_maker = async_sessionmaker(
+        engine, class_=AsyncSession, expire_on_commit=False
+    )
 
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.drop_all)
@@ -97,22 +101,34 @@ async def client(app):
 
 
 async def get_user_token(client) -> str:
-    _, resp = await client.post("/api/auth/login", json={
-        "email": TEST_USER_EMAIL,
-        "password": TEST_USER_PASSWORD,
-    })
+    _, resp = await client.post(
+        "/api/auth/login",
+        json={
+            "email": TEST_USER_EMAIL,
+            "password": TEST_USER_PASSWORD,
+        },
+    )
     return resp.json["access_token"]
 
 
 async def get_admin_token(client) -> str:
-    _, resp = await client.post("/api/auth/admin/login", json={
-        "email": TEST_ADMIN_EMAIL,
-        "password": TEST_ADMIN_PASSWORD,
-    })
+    _, resp = await client.post(
+        "/api/auth/admin/login",
+        json={
+            "email": TEST_ADMIN_EMAIL,
+            "password": TEST_ADMIN_PASSWORD,
+        },
+    )
     return resp.json["access_token"]
 
 
-def make_signature(account_id: int, amount, transaction_id: str, user_id: int, secret_key: str = SECRET_KEY) -> str:
+def make_signature(
+    account_id: int,
+    amount,
+    transaction_id: str,
+    user_id: int,
+    secret_key: str = SECRET_KEY,
+) -> str:
     sorted_keys = sorted(["account_id", "amount", "transaction_id", "user_id"])
     values = {
         "account_id": str(account_id),

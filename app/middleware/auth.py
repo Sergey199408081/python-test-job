@@ -9,9 +9,9 @@ async def get_current_user(request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         return None
-    
+
     token = auth_header.split(" ")[1]
-    
+
     async with get_session_maker()() as session:
         auth_service = AuthService(session)
         user = await auth_service.get_current_user(token)
@@ -22,18 +22,21 @@ async def get_current_admin(request: Request):
     auth_header = request.headers.get("Authorization")
     if not auth_header or not auth_header.startswith("Bearer "):
         return None
-    
+
     token = auth_header.split(" ")[1]
-    
+
     async with get_session_maker()() as session:
         auth_service = AuthService(session)
         payload = auth_service.decode_token(token)
         if not payload or payload.role != "admin":
             return None
-        
+
         from app.models.admin import Admin
         from sqlalchemy import select
-        result = await session.execute(select(Admin).where(Admin.id == payload.get_user_id()))
+
+        result = await session.execute(
+            select(Admin).where(Admin.id == payload.get_user_id())
+        )
         return result.scalar_one_or_none()
 
 
@@ -45,6 +48,7 @@ def auth_required(func):
             return json({"error": "Unauthorized"}, status=401)
         request.ctx.user = user
         return await func(request, *args, **kwargs)
+
     return wrapper
 
 
@@ -56,4 +60,5 @@ def admin_required(func):
             return json({"error": "Admin access required"}, status=403)
         request.ctx.admin = admin
         return await func(request, *args, **kwargs)
+
     return wrapper

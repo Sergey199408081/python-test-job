@@ -20,11 +20,11 @@ class UserService:
         )
         self.session.add(user)
         await self.session.flush()
-        
+
         account = Account(user_id=user.id, balance=Decimal("0.00"))
         self.session.add(account)
         await self.session.flush()
-        
+
         await self.session.commit()
         await self.session.refresh(user)
         return user
@@ -41,14 +41,14 @@ class UserService:
         user = await self.get_user(user_id)
         if not user:
             return None
-        
+
         if user_data.email is not None:
             user.email = user_data.email
         if user_data.full_name is not None:
             user.full_name = user_data.full_name
         if user_data.password is not None:
             user.password_hash = self.auth_service.get_password_hash(user_data.password)
-        
+
         await self.session.commit()
         await self.session.refresh(user)
         return user
@@ -62,5 +62,7 @@ class UserService:
         return True
 
     async def get_user_account(self, user_id: int) -> Account | None:
-        result = await self.session.execute(select(Account).where(Account.user_id == user_id))
+        result = await self.session.execute(
+            select(Account).where(Account.user_id == user_id)
+        )
         return result.scalar_one_or_none()

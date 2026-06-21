@@ -13,7 +13,9 @@ class AdminService:
     async def authenticate(self, email: str, password: str) -> Admin | None:
         result = await self.session.execute(select(Admin).where(Admin.email == email))
         admin = result.scalar_one_or_none()
-        if not admin or not self.auth_service.verify_password(password, admin.password_hash):
+        if not admin or not self.auth_service.verify_password(
+            password, admin.password_hash
+        ):
             return None
         return admin
 

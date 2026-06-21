@@ -22,11 +22,17 @@ class AuthService:
     def get_password_hash(self, password: str) -> str:
         return pwd_context.hash(password)
 
-    def create_access_token(self, data: dict, expires_delta: timedelta | None = None) -> str:
+    def create_access_token(
+        self, data: dict, expires_delta: timedelta | None = None
+    ) -> str:
         to_encode = data.copy()
-        expire = datetime.now(timezone.utc) + (expires_delta or timedelta(minutes=settings.JWT_EXPIRE_MINUTES))
+        expire = datetime.now(timezone.utc) + (
+            expires_delta or timedelta(minutes=settings.JWT_EXPIRE_MINUTES)
+        )
         to_encode.update({"exp": expire})
-        encoded_jwt = jwt.encode(to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM)
+        encoded_jwt = jwt.encode(
+            to_encode, settings.JWT_SECRET, algorithm=settings.JWT_ALGORITHM
+        )
         return encoded_jwt
 
     async def authenticate(self, email: str, password: str) -> Optional[User]:
@@ -43,7 +49,9 @@ class AuthService:
 
     def decode_token(self, token: str) -> Optional[TokenPayload]:
         try:
-            payload = jwt.decode(token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM])
+            payload = jwt.decode(
+                token, settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
+            )
             return TokenPayload(**payload)
         except jwt.JWTError:
             return None
@@ -52,5 +60,7 @@ class AuthService:
         payload = self.decode_token(token)
         if not payload:
             return None
-        result = await self.session.execute(select(User).where(User.id == payload.get_user_id()))
+        result = await self.session.execute(
+            select(User).where(User.id == payload.get_user_id())
+        )
         return result.scalar_one_or_none()

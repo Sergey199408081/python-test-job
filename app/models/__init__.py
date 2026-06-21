@@ -3,9 +3,4 @@ from app.models.admin import Admin
 from app.models.account import Account
 from app.models.payment import Payment
 
-__all__ = [
-    "User", 
-    "Admin", 
-    "Account", 
-    "Payment"
-]
+__all__ = ["User", "Admin", "Account", "Payment"]
