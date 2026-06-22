@@ -19,7 +19,7 @@
 
 2. Клонируйте репозиторий и перейдите в директорию проекта:
 ```bash
-git clone <repository-url>
+git clone https://github.com/Sergey199408081/python-test-job
 cd python-test-job
 ```
 
